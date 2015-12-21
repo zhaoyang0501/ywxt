@@ -1,5 +1,6 @@
 package com.pzy.action.admin;
 
+import java.sql.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,24 +12,23 @@ import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.json.annotations.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
-import com.osworkflow.SpringWorkflow;
 import com.pzy.entity.AdminUser;
-import com.pzy.entity.Runlog;
-import com.pzy.service.RunlogService;
+import com.pzy.entity.Category;
+import com.pzy.entity.Bug;
+import com.pzy.service.CategoryService;
+import com.pzy.service.BugService;
 
 /***
  * 
  * @author 263608237@qq.com
  *
  */
-@Namespace("/admin/runlog")
+@Namespace("/admin/bug")
 @ParentPackage("json-default")
-public class RunlogAction extends ActionSupport {
+public class BugAction extends ActionSupport {
 	/**
 	 * 
 	 */
@@ -40,23 +40,26 @@ public class RunlogAction extends ActionSupport {
 
 	private String name;
 	private Long id;
-	private Runlog runlog;
+	private Bug bug;
 	
 	private String tip;
 	
-	private List<Runlog> runlogs;
+	private List<Bug> bugs;
 	@Autowired
-	private RunlogService runlogService;
+	private BugService bugService;
 	@Autowired
-	private SpringWorkflow springWorkflow;
+	private CategoryService categoryService;
 	
-	@Action(value = "create", results = { @Result(name = "success", location = "/WEB-INF/views/admin/runlog/create.jsp") })
+	private List<Category> categorys;
+	
+	@Action(value = "create", results = { @Result(name = "success", location = "/WEB-INF/views/admin/bug/create.jsp") })
 	public String create() {
+		categorys=categoryService.findAll();
 		return SUCCESS;
 	}
-	@Action(value = "index", results = { @Result(name = "success", location = "/WEB-INF/views/admin/runlog/index.jsp") })
+	@Action(value = "index", results = { @Result(name = "success", location = "/WEB-INF/views/admin/bug/index.jsp") })
 	public String index() {
-		runlogs = runlogService.findRunlogs();
+		bugs = bugService.findBugs();
 		return SUCCESS;
 	}
 
@@ -65,7 +68,7 @@ public class RunlogAction extends ActionSupport {
 	public String list() {
 		int pageNumber = (int) (iDisplayStart / iDisplayLength) + 1;
 		int pageSize = iDisplayLength;
-		Page<Runlog> list = runlogService.findAll(pageNumber, pageSize,
+		Page<Bug> list = bugService.findAll(pageNumber, pageSize,
 				name);
 		resultMap.put("aaData", list.getContent());
 		resultMap.put("iTotalRecords", list.getTotalElements());
@@ -78,7 +81,7 @@ public class RunlogAction extends ActionSupport {
 			"contentType", "text/html" })
 	public String delete() {
 		try {
-			runlogService.delete(id);
+			bugService.delete(id);
 			resultMap.put("state", "success");
 			resultMap.put("msg", "删除成功");
 		} catch (Exception e) {
@@ -92,7 +95,7 @@ public class RunlogAction extends ActionSupport {
 	@Action(value = "get", results = { @Result(name = "success", type = "json") }, params = {
 			"contentType", "text/html" })
 	public String get() {
-		resultMap.put("runlog", runlogService.find(id));
+		resultMap.put("bug", bugService.find(id));
 		resultMap.put("state", "success");
 		resultMap.put("msg", "删除成功");
 		return SUCCESS;
@@ -101,32 +104,23 @@ public class RunlogAction extends ActionSupport {
 	@Action(value = "update", results = { @Result(name = "success", type = "json") }, params = {
 			"contentType", "text/html" })
 	public String update() {
-		Runlog bean = runlogService.find(runlog.getId());
-		bean.setName(runlog.getName());
-		bean.setRemark(runlog.getRemark());
-		bean.setCreater(runlog.getCreater());
-		runlogService.save(bean);
+		Bug bean = bugService.find(bug.getId());
+		bean.setName(bug.getName());
+		bean.setRemark(bug.getRemark());
+		bean.setCreater(bug.getCreater());
+		bugService.save(bean);
 		resultMap.put("state", "success");
 		resultMap.put("msg", "修改成功");
 		return SUCCESS;
 	}
 
 
-	@Transactional(propagation=Propagation.REQUIRED)
-	@Action(value = "save", results = { @Result(name = "success", location = "/WEB-INF/views/admin/runlog/create.jsp") })
+	@Action(value = "save", results = { @Result(name = "success", location = "/WEB-INF/views/admin/bug/create.jsp") })
 	public String save() throws Exception {
 		AdminUser user=(AdminUser)ActionContext.getContext().getSession().get("adminuser");
-		runlog.setCreater(user);
-		runlog.setLogstate("新建");
-		runlogService.save(runlog);
-		/**流程发起*/
-		Map<String, Object> argMap = new HashMap<String, Object>();
-		argMap.put("creater", String.valueOf(user.getId()));
-		argMap.put("caller",String.valueOf(user.getId()));
-		
-		springWorkflow.SetContext(String.valueOf(user.getId()));
-		Long workFlowid = springWorkflow.initialize("runlog", 10, argMap);
-		System.out.println("fuck"+workFlowid);
+		bug.setCreater(user);
+		bug.setBugstate("新建");
+		bugService.save(bug);
 		tip = "系统运行日志录入成功！";
 		return SUCCESS;
 	}
@@ -189,19 +183,25 @@ public class RunlogAction extends ActionSupport {
 
 	
 
-	public Runlog getRunlog() {
-		return runlog;
+	public Bug getBug() {
+		return bug;
 	}
 
-	public void setRunlog(Runlog runlog) {
-		this.runlog = runlog;
+	public void setBug(Bug bug) {
+		this.bug = bug;
 	}
 
-	public List<Runlog> getRunlogs() {
-		return runlogs;
+	public List<Bug> getBugs() {
+		return bugs;
 	}
 
-	public void setRunlogs(List<Runlog> runlogs) {
-		this.runlogs = runlogs;
+	public void setBugs(List<Bug> bugs) {
+		this.bugs = bugs;
+	}
+	public List<Category> getCategorys() {
+		return categorys;
+	}
+	public void setCategorys(List<Category> categorys) {
+		this.categorys = categorys;
 	}
 }

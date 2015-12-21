@@ -89,7 +89,7 @@
 
 	<aop:config>
 		<aop:pointcut id="txPointcut"
-			expression="execution(* com.pzy.service.*.*(..)) or execution(* com.osworkflow.*.*(..))" />
+			expression="execution(* com.pzy.service.*.*(..)) or execution(* com.osworkflow.*.*(..)) " />
 		<aop:advisor advice-ref="txAdvice" pointcut-ref="txPointcut" />
 	</aop:config>
 	
