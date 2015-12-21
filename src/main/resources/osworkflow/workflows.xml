@@ -1,0 +1,4 @@
+<workflows>
+   <workflow name="workflowAway" type="resource" location="osworkflow/workflowAway.xml"/>
+   <workflow name="runlog" type="resource" location="osworkflow/runlog.xml"/>
+</workflows>

@@ -1,9 +1,12 @@
 package com.pzy.action.admin;
 
+import java.text.ParseException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -12,21 +15,26 @@ import org.apache.struts2.json.annotations.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 
+import com.opensymphony.workflow.WorkflowException;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 import com.osworkflow.SpringWorkflow;
+import com.pzy.constants.ImsConstants.WorkFlowConstants;
 import com.pzy.entity.AdminUser;
 import com.pzy.entity.Runlog;
+import com.pzy.entity.osworkflow.CurrentStep;
+import com.pzy.service.AdminUserService;
 import com.pzy.service.RunlogService;
+import com.pzy.service.WorkFlowService;
 
 /***
  * 
  * @author 263608237@qq.com
  *
  */
-@Namespace("/admin/runlog")
+@Namespace("/admin/toapprove")
 @ParentPackage("json-default")
-public class RunlogAction extends ActionSupport {
+public class ToapproveAction extends ActionSupport {
 	/**
 	 * 
 	 */
@@ -34,12 +42,17 @@ public class RunlogAction extends ActionSupport {
 	private Integer sEcho = 1;
 	private Integer iDisplayStart = 0;
 	private Integer iDisplayLength = 10;
+	private String workFlowName;
+	private String startDate;
+	private String endDate;
+	private Long  craterId;
+	
 	private Map<String, Object> resultMap = new HashMap<String, Object>();
 
 	private String name;
 	private Long id;
 	private Runlog runlog;
-	
+	private Map<String,String>  workflowNames;
 	private String tip;
 	
 	private List<Runlog> runlogs;
@@ -47,87 +60,36 @@ public class RunlogAction extends ActionSupport {
 	private RunlogService runlogService;
 	@Autowired
 	private SpringWorkflow springWorkflow;
-	
-	@Action(value = "create", results = { @Result(name = "success", location = "/WEB-INF/views/admin/runlog/create.jsp") })
-	public String create() {
-		return SUCCESS;
-	}
-	@Action(value = "index", results = { @Result(name = "success", location = "/WEB-INF/views/admin/runlog/index.jsp") })
+	@Autowired
+	private AdminUserService adminUserService;
+	@Autowired
+	private WorkFlowService workFlowService;
+	@Action(value = "index", results = { @Result(name = "success", location = "/WEB-INF/views/admin/toapprove/index.jsp") })
 	public String index() {
+		workflowNames= WorkFlowConstants.WORKFLOWNAME_MAP;
 		runlogs = runlogService.findRunlogs();
 		return SUCCESS;
 	}
 
 	@Action(value = "list", results = { @Result(name = "success", type = "json") }, params = {
 			"contentType", "text/html" })
-	public String list() {
-		int pageNumber = (int) (iDisplayStart / iDisplayLength) + 1;
-		int pageSize = iDisplayLength;
-		Page<Runlog> list = runlogService.findAll(pageNumber, pageSize,
-				name);
-		resultMap.put("aaData", list.getContent());
-		resultMap.put("iTotalRecords", list.getTotalElements());
-		resultMap.put("iTotalDisplayRecords", list.getTotalElements());
+	public String list() throws WorkflowException, ParseException {
+		Date start = startDate==null?null:DateUtils.parseDate(startDate, "yyyy-MM-dd");
+		Date end= endDate==null?null:DateUtils.parseDate(endDate, "yyyy-MM-dd");
+		AdminUser creater = craterId==null?null:adminUserService.find(craterId);
+		
+		AdminUser user=(AdminUser)ActionContext.getContext().getSession().get("adminuser");
+		Page<CurrentStep> currentSteps = 
+				workFlowService.findTodoList(workFlowName, start, end,
+						adminUserService.find(user.getId()),creater, null, (iDisplayStart / iDisplayLength) + 1, iDisplayLength);
+		resultMap.put("aaData", currentSteps.getContent());
+		resultMap.put("iTotalRecords", currentSteps.getTotalElements());
+		resultMap.put("iTotalDisplayRecords", currentSteps.getTotalElements());
 		resultMap.put("sEcho", sEcho);
 		return SUCCESS;
 	}
 
-	@Action(value = "delete", results = { @Result(name = "success", type = "json") }, params = {
-			"contentType", "text/html" })
-	public String delete() {
-		try {
-			runlogService.delete(id);
-			resultMap.put("state", "success");
-			resultMap.put("msg", "删除成功");
-		} catch (Exception e) {
-			resultMap.put("state", "error");
-			resultMap.put("msg", "删除失败，外键约束");
-		}
-
-		return SUCCESS;
-	}
-
-	@Action(value = "get", results = { @Result(name = "success", type = "json") }, params = {
-			"contentType", "text/html" })
-	public String get() {
-		resultMap.put("runlog", runlogService.find(id));
-		resultMap.put("state", "success");
-		resultMap.put("msg", "删除成功");
-		return SUCCESS;
-	}
-
-	@Action(value = "update", results = { @Result(name = "success", type = "json") }, params = {
-			"contentType", "text/html" })
-	public String update() {
-		Runlog bean = runlogService.find(runlog.getId());
-		bean.setName(runlog.getName());
-		bean.setRemark(runlog.getRemark());
-		bean.setCreater(runlog.getCreater());
-		runlogService.save(bean);
-		resultMap.put("state", "success");
-		resultMap.put("msg", "修改成功");
-		return SUCCESS;
-	}
-
-
-	@Action(value = "save", results = { @Result(name = "success", location = "/WEB-INF/views/admin/runlog/create.jsp") })
-	public String save() throws Exception {
-		AdminUser user=(AdminUser)ActionContext.getContext().getSession().get("adminuser");
-		runlog.setCreater(user);
-		runlog.setLogstate("新建");
-		runlogService.save(runlog);
-		/**流程发起*/
-		Map<String, Object> argMap = new HashMap<String, Object>();
-		argMap.put("creater", String.valueOf(user.getId()));
-		argMap.put("caller",String.valueOf(user.getId()));
-		
-		springWorkflow.SetContext(String.valueOf(user.getId()));
-		Long workFlowid = springWorkflow.initialize("runlog", 10, argMap);
-		System.out.println("fuck"+workFlowid);
-		tip = "系统运行日志录入成功！";
-		return SUCCESS;
-	}
-
+	
 	public String getTip() {
 		return tip;
 	}
@@ -200,5 +162,45 @@ public class RunlogAction extends ActionSupport {
 
 	public void setRunlogs(List<Runlog> runlogs) {
 		this.runlogs = runlogs;
+	}
+
+	public String getWorkFlowName() {
+		return workFlowName;
+	}
+
+	public void setWorkFlowName(String workFlowName) {
+		this.workFlowName = workFlowName;
+	}
+
+	public String getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(String startDate) {
+		this.startDate = startDate;
+	}
+
+	public String getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(String endDate) {
+		this.endDate = endDate;
+	}
+
+	public Long getCraterId() {
+		return craterId;
+	}
+
+	public void setCraterId(Long craterId) {
+		this.craterId = craterId;
+	}
+
+	public Map<String, String> getWorkflowNames() {
+		return workflowNames;
+	}
+
+	public void setWorkflowNames(Map<String, String> workflowNames) {
+		this.workflowNames = workflowNames;
 	}
 }

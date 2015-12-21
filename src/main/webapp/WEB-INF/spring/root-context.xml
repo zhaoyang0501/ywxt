@@ -89,8 +89,10 @@
 
 	<aop:config>
 		<aop:pointcut id="txPointcut"
-			expression="execution(* com.pzy.service.*.*(..)) " />
+			expression="execution(* com.pzy.service.*.*(..)) or execution(* com.osworkflow.*.*(..))" />
 		<aop:advisor advice-ref="txAdvice" pointcut-ref="txPointcut" />
 	</aop:config>
+	
+	 <import resource="applicationContext-osworkflow.xml" />
 </beans>
  
