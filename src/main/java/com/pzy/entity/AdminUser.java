@@ -1,4 +1,6 @@
 package com.pzy.entity;
+import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -28,6 +30,8 @@ public class AdminUser {
 	private String realname;
 	private String tel;
 	private String job;
+	private String dept;
+	private Date birth;
 	private String role1;
 	private String role2;
 	private String role3;
@@ -36,6 +40,18 @@ public class AdminUser {
 	private String role6;
 	@Persistent
 	private Integer  num;
+	public String getDept() {
+		return dept;
+	}
+	public void setDept(String dept) {
+		this.dept = dept;
+	}
+	public Date getBirth() {
+		return birth;
+	}
+	public void setBirth(Date birth) {
+		this.birth = birth;
+	}
 	public String getRealname() {
 		return realname;
 	}
