@@ -46,56 +46,68 @@
 					<div class="span12">
 						<div class="content-widgets ">
 						<div class="widget-head  bondi-blue">
-							<h3>填写维修单</h3>
+							<h3>工单提交</h3>
 						</div>
 						<div class="widget-container">
-							<form id='dayoffform' class="form-horizontal " method="post" action="item/save">
+							<form id='dayoffform' class="form-horizontal " method="post" action="work/save">
 							 <input type="hidden" name="token" id='token' value="${token}">
 								<table id='' class=" responsive table table-striped table_bordered_black table-condensed formtable" >
 									<tr>
-										<td colspan="6">
+										<td colspan="4">
 											<div class="table_title">
-												 <h3>汽车维修单</h3> 
+												 <h3>工作单</h3> 
 											</div>
 										</td>
 									</tr>
 									<tr>
-										<td class='lable'>客户姓名</td>
-										<td><input type="text" value=" " name='item.name'></input></td>
-										<td class='lable'>客户电话：</td>
-										<td><input type="text" value=""  name='item.tel'></input></td>
-										<td class='lable'>车牌号码：</td>
-										<td><input type="text" value=""   name='item.carid'></input> </td>
-									</tr>
-									<tr>
-										<td class='lable'>送车时间：</td>
-										<td colspan="2" >
-											<div class="input-append date">
-											 <input id="createDate" name="item.createDate" type="text" readonly="readonly" class="form_datetime">
+										<td class='lable'>日期</td>
+										<td><div class="input-append date">
+											 <input id="createDate" name="work.createDate" type="text" readonly="readonly" class="form_datetime">
 											 <span class="add-on"><i class="icon-th"></i></span>
 										    </div>
+										  </td>
+										<td class='lable'>涉及设备：</td>
+										<td >
+											<select name="work.category.id"  style="width: 200px">
+												<c:forEach items="${categorys }" var="bean" >
+													<option value="${bean.id }">${bean.name }</option>
+												</c:forEach>
+											</select>
 										</td>
-										<td class='lable'>要求取车时间：</td>
-										<td colspan="2" >
-											<div class="input-append date">
-											 <input id="createDate" name="item.needDate" type="text" readonly="readonly" class="form_datetime">
-											 <span class="add-on"><i class="icon-th"></i></span>
-										    </div>
-										</td>
-										</tr>
-									<tr>
-										<td class='lable'>客户地址：<span class="text-error">*</span></td>
-										<td colspan="5" ><textarea  name='item.addr' style="width: 90%" rows="2" cols=""></textarea> </td>
 									</tr>
 									<tr>
-										<td class='lable'>故障描述：<span class="text-error">*</span></td>
-										<td colspan="5" ><textarea  name='item.remark' style="width: 90%" rows="2" cols=""></textarea> </td>
+										<td class='lable'>所属部门：</td>
+										<td >
+											<select name="work.dept" style="width: 200px">
+												<option value="管理部门">管理部门</option>
+												<option value="运维部门">运维部门</option>
+												<option value="研发部门">研发部门</option>
+											</select>
+										</td>
+										<td class='lable'>紧急程度：</td>
+										<td >
+											<select name="work.state" style="width: 200px">
+												<option value="高">高</option>
+												<option value="中">中</option>
+												<option value="低">低</option>
+											</select>
+										</td>
+									<tr>
+									<tr>
+										<td class='lable'>工单标题：</td>
+										<td colspan="3" >
+											<input name='work.name' type="text" class="span8" style="width: 90%"></input>
+										</td>
+									<tr>
+									<tr>
+										<td class='lable'>工单内容：</td>
+										<td colspan="3" ><textarea  name='work.remark' style="width: 90%" rows="2" cols=""></textarea> </td>
 									</tr>
 									<tr  class='remark'>
-										<td colspan="6">
+										<td colspan="4">
 											<ol>
-											  <li>送车时必须将车内贵重物品取出</li>
-											  <li>请保持手机畅通</li>
+											  <li>请及时提交维修单据</li>
+											  <li>不得替他人提交单据</li>
 											</ol>
 										</td>
 									</tr>

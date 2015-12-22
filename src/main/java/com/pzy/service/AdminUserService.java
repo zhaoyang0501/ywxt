@@ -18,27 +18,19 @@ import org.springframework.stereotype.Service;
 
 import com.pzy.entity.AdminUser;
 import com.pzy.repository.AdminUserRepository;
-import com.pzy.repository.ItemRepository;
 
 @Service
 public class AdminUserService {
      @Autowired
      private AdminUserRepository adminUserRepository;
-     @Autowired
-     private ItemRepository itemRepository;
+    
      public  AdminUser save(AdminUser adminUser){
     	 return adminUserRepository.save(adminUser);
      }
      public List<AdminUser> findAll(){
     	return (List<AdminUser>) adminUserRepository.findAll();
      }
-     public List<AdminUser> findAll(String job){
-    	 List<AdminUser> list=adminUserRepository.findByJob(job);
-    	 for(AdminUser bean:list){
-    		 bean.setNum(itemRepository.findByWorker(bean.getId()));
-    	 }
-    	 return list;
-     }
+    
      public AdminUser login(String adminUserName,String password){
     	 List<AdminUser> adminUsers=adminUserRepository.findByNameAndPassword(adminUserName,password);
     	 return adminUsers.size()==0?null:adminUsers.get(0);

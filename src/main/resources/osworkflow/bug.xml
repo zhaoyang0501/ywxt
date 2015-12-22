@@ -112,7 +112,7 @@
 						</conditions>
 					</restrict-to>
 					<results>
-						<unconditional-result id="551" old-status="Finished" status="Queued" step="4" owner="${nexter}" />
+						<unconditional-result id="551" old-status="Finished" status="Queued" step="4" owner="${creater}" />
 					</results>
 				</action>
 			</actions>

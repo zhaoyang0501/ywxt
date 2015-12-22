@@ -25,6 +25,7 @@ import com.pzy.entity.AdminUser;
 import com.pzy.entity.Bug;
 import com.pzy.entity.Fixlog;
 import com.pzy.entity.Runlog;
+import com.pzy.entity.Work;
 import com.pzy.entity.osworkflow.Approval;
 import com.pzy.entity.osworkflow.CurrentStep;
 import com.pzy.entity.osworkflow.Wfentry;
@@ -33,6 +34,7 @@ import com.pzy.service.BugService;
 import com.pzy.service.FixlogService;
 import com.pzy.service.RunlogService;
 import com.pzy.service.WorkFlowService;
+import com.pzy.service.WorkService;
 
 /***
  * 
@@ -61,6 +63,7 @@ public class ToapproveAction extends ActionSupport {
 	private Runlog runlog;
 	private Fixlog fixlog;
 	private Bug bug;
+	private Work work;
 	private Map<String,String>  workflowNames;
 	private String tip;
 	
@@ -77,6 +80,8 @@ public class ToapproveAction extends ActionSupport {
 	@Autowired
 	private BugService bugService;
 	@Autowired
+	private WorkService workService;
+	@Autowired
 	private SpringWorkflow springWorkflow;
 	@Autowired
 	private AdminUserService adminUserService;
@@ -91,7 +96,8 @@ public class ToapproveAction extends ActionSupport {
 	
 	@Action(value = "goApprove", results = { @Result(name = "runlog", location = "/WEB-INF/views/admin/runlog/approve.jsp"),
 			 @Result(name = "fixlog", location = "/WEB-INF/views/admin/fixlog/approve.jsp"),
-	 			@Result(name = "bug", location = "/WEB-INF/views/admin/bug/approve.jsp")})
+	 			@Result(name = "bug", location = "/WEB-INF/views/admin/bug/approve.jsp"),
+	 				@Result(name = "work", location = "/WEB-INF/views/admin/work/approve.jsp")})
 	public String goApprove() {
 		AdminUser user=(AdminUser)ActionContext.getContext().getSession().get("adminuser");
 		springWorkflow.SetContext(String.valueOf( user.getId()));
@@ -106,6 +112,7 @@ public class ToapproveAction extends ActionSupport {
 		runlog=runlogService.findByWfentry(wfentry);
 		fixlog=fixlogService.findByWfentry(wfentry);
 		bug=bugService.findByWfentry(wfentry);
+		work=workService.findByWfentry(wfentry);
 		users=adminUserService.findAll();
 		return wfentry.getName();
 	}
@@ -274,6 +281,14 @@ public class ToapproveAction extends ActionSupport {
 	}
 	public List<AdminUser> getUsers() {
 		return users;
+	}
+
+	public Work getWork() {
+		return work;
+	}
+
+	public void setWork(Work work) {
+		this.work = work;
 	}
 
 	public void setUsers(List<AdminUser> users) {

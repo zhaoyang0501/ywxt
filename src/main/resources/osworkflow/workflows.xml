@@ -3,4 +3,5 @@
    <workflow name="runlog" type="resource" location="osworkflow/runlog.xml"/>
    <workflow name="fixlog" type="resource" location="osworkflow/fixlog.xml"/>
    <workflow name="bug" type="resource" location="osworkflow/bug.xml"/>
+   <workflow name="work" type="resource" location="osworkflow/work.xml"/>
 </workflows>

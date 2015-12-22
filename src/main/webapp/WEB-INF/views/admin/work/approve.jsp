@@ -67,38 +67,38 @@
 									<tr>
 										<td colspan="4">
 											<div class="table_title">
-												 <h3>系统缺陷单</h3> 
+												 <h3>工作单</h3> 
 											</div>
 										</td>
 									</tr>
 									<tr>
-										<td class='lable'>发现日期</td>
-										<td>${bug.createDate}
+										<td class='lable'>日期</td>
+										<td>${work.createDate }
 										  </td>
-										<td class='lable'>缺陷设备：</td>
+										<td class='lable'>涉及设备：</td>
 										<td >
-											${bug.category.name }
+											${work.category.name}
 										</td>
 									</tr>
 									<tr>
-										<td class='lable'>缺陷类型：</td>
+										<td class='lable'>所属部门：</td>
 										<td >
-											${bug.type }
+											${work.category.name}
 										</td>
-										<td class='lable'>缺陷等级：</td>
+										<td class='lable'>紧急程度：</td>
 										<td >
-											${bug.state }
+											${work.state}
 										</td>
 									<tr>
 									<tr>
-										<td class='lable'>缺陷标题：</td>
+										<td class='lable'>工单标题：</td>
 										<td colspan="3" >
-											${bug.name }
+											${work.name}
 										</td>
 									<tr>
 									<tr>
-										<td class='lable'>缺陷详细内容：</td>
-										<td colspan="3" >${bug.remark } </td>
+										<td class='lable'>工单内容：</td>
+										<td colspan="3" >${work.remark} </td>
 									</tr>
 									<tr  class='remark'>
 										<td colspan="4">
@@ -113,7 +113,7 @@
 							
 							
 							<div class="widget-header-block">
-									<h4 class="widget-header">审批信息</h4>
+									<h4 class="widget-header">${wfentry.currentStep.stepId}审批信息</h4>
 								</div>
 								<table id='dt_weekReport' class="responsive table table-striped table-bordered table-condensed">
 									<thead>
@@ -145,14 +145,14 @@
 								
 								
 								<c:if test="${actions.size()!=0}">
-								<form  id='workflowform' class="form-horizontal " method="post" action="${pageContext.request.contextPath}/admin/bug/doApprove">
+								<form  id='workflowform' class="form-horizontal " method="post" action="${pageContext.request.contextPath}/admin/work/doApprove">
 									<input type="hidden" name='actionid' value="">
 									<input type="hidden" name='id' value="${wfentry.id }">
 									<fieldset class="default">
 										<legend>审批批意见</legend>
 										<div class="control-group">
-											<c:if test="${wfentry.currentStep.stepId==3}">
-											<label class="control-label">选择缺陷处理人</label>
+										<c:if test="${wfentry.currentStep.stepId==3}">
+											<label class="control-label">选择工单处理人</label>
 											<div class="controls">
 												<select name='nexter'>
 													<c:forEach items="${users }" var="bean">
@@ -162,7 +162,7 @@
 											</div>
 										</c:if>
 											<c:if test="${wfentry.currentStep.stepId==4}">
-											<label class="control-label">选择缺陷验收人</label>
+											<label class="control-label">选择工单验收人</label>
 											<div class="controls">
 												<select name='nexter'>
 													<c:forEach items="${users }" var="bean">
