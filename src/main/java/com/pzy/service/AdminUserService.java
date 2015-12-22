@@ -29,6 +29,9 @@ public class AdminUserService {
      public  AdminUser save(AdminUser adminUser){
     	 return adminUserRepository.save(adminUser);
      }
+     public List<AdminUser> findAll(){
+    	return (List<AdminUser>) adminUserRepository.findAll();
+     }
      public List<AdminUser> findAll(String job){
     	 List<AdminUser> list=adminUserRepository.findByJob(job);
     	 for(AdminUser bean:list){

@@ -2,4 +2,5 @@
    <workflow name="workflowAway" type="resource" location="osworkflow/workflowAway.xml"/>
    <workflow name="runlog" type="resource" location="osworkflow/runlog.xml"/>
    <workflow name="fixlog" type="resource" location="osworkflow/fixlog.xml"/>
+   <workflow name="bug" type="resource" location="osworkflow/bug.xml"/>
 </workflows>

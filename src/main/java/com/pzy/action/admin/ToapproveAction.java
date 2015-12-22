@@ -22,12 +22,14 @@ import com.opensymphony.xwork2.ActionSupport;
 import com.osworkflow.SpringWorkflow;
 import com.pzy.constants.ImsConstants.WorkFlowConstants;
 import com.pzy.entity.AdminUser;
+import com.pzy.entity.Bug;
 import com.pzy.entity.Fixlog;
 import com.pzy.entity.Runlog;
 import com.pzy.entity.osworkflow.Approval;
 import com.pzy.entity.osworkflow.CurrentStep;
 import com.pzy.entity.osworkflow.Wfentry;
 import com.pzy.service.AdminUserService;
+import com.pzy.service.BugService;
 import com.pzy.service.FixlogService;
 import com.pzy.service.RunlogService;
 import com.pzy.service.WorkFlowService;
@@ -58,6 +60,7 @@ public class ToapproveAction extends ActionSupport {
 	private Long id;
 	private Runlog runlog;
 	private Fixlog fixlog;
+	private Bug bug;
 	private Map<String,String>  workflowNames;
 	private String tip;
 	
@@ -65,10 +68,14 @@ public class ToapproveAction extends ActionSupport {
 	private List<Runlog> runlogs;
 	
 	private List<Approval> approvals;
+	
+	private List<AdminUser> users;
 	@Autowired
 	private RunlogService runlogService;
 	@Autowired
 	private FixlogService fixlogService;
+	@Autowired
+	private BugService bugService;
 	@Autowired
 	private SpringWorkflow springWorkflow;
 	@Autowired
@@ -83,7 +90,8 @@ public class ToapproveAction extends ActionSupport {
 	}
 	
 	@Action(value = "goApprove", results = { @Result(name = "runlog", location = "/WEB-INF/views/admin/runlog/approve.jsp"),
-			 @Result(name = "fixlog", location = "/WEB-INF/views/admin/fixlog/approve.jsp")})
+			 @Result(name = "fixlog", location = "/WEB-INF/views/admin/fixlog/approve.jsp"),
+	 			@Result(name = "bug", location = "/WEB-INF/views/admin/bug/approve.jsp")})
 	public String goApprove() {
 		AdminUser user=(AdminUser)ActionContext.getContext().getSession().get("adminuser");
 		springWorkflow.SetContext(String.valueOf( user.getId()));
@@ -97,6 +105,8 @@ public class ToapproveAction extends ActionSupport {
 		}
 		runlog=runlogService.findByWfentry(wfentry);
 		fixlog=fixlogService.findByWfentry(wfentry);
+		bug=bugService.findByWfentry(wfentry);
+		users=adminUserService.findAll();
 		return wfentry.getName();
 	}
 	@Action(value = "list", results = { @Result(name = "success", type = "json") }, params = {
@@ -246,5 +256,27 @@ public class ToapproveAction extends ActionSupport {
 	}
 	public void setActions(Map<Integer, String> actions) {
 		this.actions = actions;
+	}
+	public Fixlog getFixlog() {
+		return fixlog;
+	}
+
+	public void setFixlog(Fixlog fixlog) {
+		this.fixlog = fixlog;
+	}
+
+	public Bug getBug() {
+		return bug;
+	}
+
+	public void setBug(Bug bug) {
+		this.bug = bug;
+	}
+	public List<AdminUser> getUsers() {
+		return users;
+	}
+
+	public void setUsers(List<AdminUser> users) {
+		this.users = users;
 	}
 }

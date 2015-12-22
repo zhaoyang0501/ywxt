@@ -142,12 +142,12 @@ public class WorkFlowService {
 				if (workflowState!=null) {
 					predicate.getExpressions().add(cb.equal(root.get("wfentry").get("state").as(Integer.class), workflowState));
 				}
-				if(creater!=null){
+				/*if(creater!=null){
 					predicate.getExpressions().add(cb.equal(root.get("wfentry").get("wfentryExtend").get("creater").as(AdminUser.class), creater));
 				}
 				if(sn!=null){
 					predicate.getExpressions().add(cb.equal(root.get("wfentry").get("wfentryExtend").get("sn").as(String.class), sn));
-				}
+				}*/
 				Subquery<Long> subquery = query.subquery(Long.class);
 				Root<HistoryStep> subroot = subquery.from(HistoryStep.class);
 				Predicate subpredicate = cb.conjunction(); 
@@ -183,7 +183,8 @@ public class WorkFlowService {
 		Approval approval = new Approval();
 		approval.setApprovel(approvalstr);
 		approval.setCreateDate(new Timestamp(System.currentTimeMillis()));
-		HistoryStep  historyStep = workFlowHistorystepRepository.findOne(stepid);
+		HistoryStep  historyStep = new HistoryStep();
+		historyStep.setId(stepid);
 		approval.setStep(historyStep);
 		approval.setAction(action);
 		workFlowApprovalRepository.save(approval);

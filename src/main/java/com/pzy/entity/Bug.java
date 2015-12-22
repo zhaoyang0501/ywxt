@@ -13,8 +13,14 @@ import javax.persistence.Table;
 import com.pzy.entity.osworkflow.Wfentry;
 
 @Entity
-@Table(name = "t_fixlog")
+@Table(name = "t_bug")
 public class Bug {
+	public Wfentry getWfentry() {
+		return wfentry;
+	}
+	public void setWfentry(Wfentry wfentry) {
+		this.wfentry = wfentry;
+	}
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;

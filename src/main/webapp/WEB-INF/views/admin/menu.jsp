@@ -31,7 +31,7 @@
 					<li><a href="${pageContext.request.contextPath}/admin/wiki/index"><i class="icon-upload"></i>知识库管理</a></li>
 					<li><a href="${pageContext.request.contextPath}/admin/adminuser/index"><i class="icon-upload"></i>用户管理</a></li>
 					<li><a href="${pageContext.request.contextPath}/admin/toapprove/index"><i class="icon-upload"></i>我的代办</a></li>
-					<li><a href="${pageContext.request.contextPath}/admin/item/notice"><i class="icon-upload"></i>我的已办</a></li>
+					<li><a href="${pageContext.request.contextPath}/admin/approved/index"><i class="icon-upload"></i>我的已办</a></li>
 					<li><a href="${pageContext.request.contextPath}/admin/runlog/create"><i class="icon-upload"></i>运行日志提交</a></li>
 					<li><a href="${pageContext.request.contextPath}/admin/fixlog/create"><i class="icon-upload"></i>日常维护记录提交</a></li>
 					<li><a href="${pageContext.request.contextPath}/admin/bug/create"><i class="icon-upload"></i>缺陷流程提交</a></li>					

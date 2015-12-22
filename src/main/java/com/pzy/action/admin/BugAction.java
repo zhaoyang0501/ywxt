@@ -13,13 +13,18 @@ import org.apache.struts2.json.annotations.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 
+import com.opensymphony.workflow.spi.Step;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
+import com.osworkflow.SpringWorkflow;
 import com.pzy.entity.AdminUser;
 import com.pzy.entity.Category;
 import com.pzy.entity.Bug;
+import com.pzy.entity.osworkflow.Wfentry;
+import com.pzy.entity.osworkflow.WfentryExtend;
 import com.pzy.service.CategoryService;
 import com.pzy.service.BugService;
+import com.pzy.service.WorkFlowService;
 
 /***
  * 
@@ -41,7 +46,9 @@ public class BugAction extends ActionSupport {
 	private String name;
 	private Long id;
 	private Bug bug;
-	
+	private Integer actionid;
+	private String approves;
+	private String nexter;
 	private String tip;
 	
 	private List<Bug> bugs;
@@ -51,7 +58,10 @@ public class BugAction extends ActionSupport {
 	private CategoryService categoryService;
 	
 	private List<Category> categorys;
-	
+	@Autowired
+	private SpringWorkflow springWorkflow;
+	@Autowired
+	private WorkFlowService workFlowService;
 	@Action(value = "create", results = { @Result(name = "success", location = "/WEB-INF/views/admin/bug/create.jsp") })
 	public String create() {
 		categorys=categoryService.findAll();
@@ -121,10 +131,49 @@ public class BugAction extends ActionSupport {
 		bug.setCreater(user);
 		bug.setBugstate("新建");
 		bugService.save(bug);
-		tip = "系统运行日志录入成功！";
+		/**流程发起*/
+		Map<String, Object> argMap = new HashMap<String, Object>();
+		argMap.put("creater", String.valueOf(user.getId()));
+		argMap.put("caller",String.valueOf(user.getId()));
+		argMap.put("nexter","1");
+		argMap.put("manager","1");
+		
+		springWorkflow.SetContext(String.valueOf(user.getId()));
+		Long workFlowid = springWorkflow.initialize("bug", 10, argMap);
+		List<Step> steps = springWorkflow.getCurrentSteps(workFlowid);
+		springWorkflow.doAction(workFlowid, 11, argMap);
+		/** 工作流扩展信息 **/
+		Wfentry wfentry = workFlowService.findWfentry(workFlowid);
+		bug.setWfentry(wfentry);
+		bugService.save(bug);
+		WfentryExtend extend = new WfentryExtend();
+		extend.setCreater(user);
+		extend.setCreateDate(new Date(System.currentTimeMillis()));
+		extend.setTitle(user.getRealname() + "的 [缺陷单]");
+		extend.setWfentry(wfentry);
+		workFlowService.saveWfentryExtend(extend);
+			/** 审批意见 **/
+		workFlowService.saveApproval("提交缺陷单", steps.get(0).getId(),springWorkflow.getWorkflowDescriptor("bug").getAction(11).getName());
+		tip = "缺陷单录入成功！";
 		return SUCCESS;
 	}
-
+	@Action(value = "doApprove", results = { @Result(name = "success",type="redirectAction", location = "../../admin/toapprove/goApprove?id=${id}") })
+	public String doApprove() throws Exception {
+		AdminUser user=(AdminUser)ActionContext.getContext().getSession().get("adminuser");
+		Map<String, Object> argMap = new HashMap<String, Object>();
+		argMap.put("creater", String.valueOf(user.getId()));
+		argMap.put("caller",String.valueOf(user.getId()));
+		argMap.put("manager","1");
+		argMap.put("nexter",nexter);
+		
+		springWorkflow.SetContext(String.valueOf(user.getId()));
+		List<Step> steps = springWorkflow.getCurrentSteps(id);
+		springWorkflow.doAction(id, actionid, argMap);
+			/** 审批意见 **/
+		workFlowService.saveApproval(approves, steps.get(0).getId(),springWorkflow.getWorkflowDescriptor("bug").getAction(actionid).getName());
+		tip = "审批成功！";
+		return SUCCESS;
+	}
 	public String getTip() {
 		return tip;
 	}
@@ -203,5 +252,23 @@ public class BugAction extends ActionSupport {
 	}
 	public void setCategorys(List<Category> categorys) {
 		this.categorys = categorys;
+	}
+	public Integer getActionid() {
+		return actionid;
+	}
+	public void setActionid(Integer actionid) {
+		this.actionid = actionid;
+	}
+	public String getApproves() {
+		return approves;
+	}
+	public void setApproves(String approves) {
+		this.approves = approves;
+	}
+	public String getNexter() {
+		return nexter;
+	}
+	public void setNexter(String nexter) {
+		this.nexter = nexter;
 	}
 }

@@ -118,7 +118,7 @@ jQuery.approve= {
 	},
 	initapproved : function() {
 		if (this.approved == null) {
-			this.approved = $('#table_approved').dataTable(
+			this.approved = $('#table_toapprove').dataTable(
 					{
 						"sDom" : "<'row-fluid'<'span6'l>r>t<'row-fluid'<'span6'i><'span6'p>>",
 						"sPaginationType" : "bootstrap",
@@ -143,7 +143,7 @@ jQuery.approve= {
 						"sServerMethod" : "POST",
 						"bProcessing" : true,
 						"bSort" : false,
-						"sAjaxSource" : $.ace.getContextPath() + "/workflow/approvedList",
+						"sAjaxSource" : $.ace.getContextPath() + "/admin/approved/list",
 						"fnServerData" : function(sSource, aoData, fnCallback) {
 							var workFlowName = $("#approved_workFlowName").val();
 							var startDate = $("#approved_startDate").val();
@@ -192,35 +192,37 @@ jQuery.approve= {
 								"type" : "POST",
 								"url" : sSource,
 								"data" : aoData,
-								"success" : fnCallback
+								"success" : function(data){
+									fnCallback(data.resultMap);
+								}
 							});
 						},
-						"aoColumns" : [ {
+						"aoColumns" :[ {
 							"mDataProp" : "wfentry.name"
 						},{
-							"mDataProp" : "wfentry.wfentryExtend.sn"
+							"mDataProp" : "wfentry.wfentryExtend.createDate"
 						},{
 							
-							"mDataProp" : "wfentry.wfentryExtend.creater.chinesename"
+							"mDataProp" : "wfentry.wfentryExtend.creater.realname"
 						},{
 							"mDataProp" : "startDate"
 						}, {
 							"mDataProp" : "name"
-						}, {
+						},  {
 							"mDataProp" : "wfentry.state"
-						} ],
+						}],
 						"aoColumnDefs" : [
 								{
 									'aTargets' : [0],
 									'fnRender' : function(oObj, sVal) {
 										return  "<a style='font-weight: bold;'  href=\""+$.ace.getContextPath() +
-										"/workflow/approved/goApprove/"+ oObj.aData.wfentry.id+"\" >"+sVal+"</a>&nbsp;";
+										"/admin/toapprove/goApprove?id="+ oObj.aData.wfentry.id+"\" >"+sVal+"</a>&nbsp;";
 									}
 								},
 								{
 									'aTargets' : [ 4],
 									'fnRender' : function(oObj, sVal) {
-										return "<a target='_blank' href='workflow/workflowgraph/"+oObj.aData.wfentry.id+"'>"+sVal+"</a>";
+										return "<a  href='#'>"+sVal+"</a>";
 									}
 								},
 								{
@@ -242,7 +244,7 @@ jQuery.approve= {
 
 					});
 		} else {
-			var ajaxSource = $.ace.getContextPath() + "/workflow/approvedList";
+			var ajaxSource = $.ace.getContextPath() + "/admin/approved/list";
 			var oSettings = this.approved.fnSettings();
 			oSettings.sAjaxSource = ajaxSource;
 			this.approved.fnDraw(oSettings);

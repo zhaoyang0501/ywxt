@@ -17,6 +17,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.pzy.entity.Bug;
+import com.pzy.entity.Fixlog;
+import com.pzy.entity.osworkflow.Wfentry;
 import com.pzy.repository.BugRepository;
 @Service
 public class BugService {
@@ -59,5 +61,8 @@ public class BugService {
 		}
 		public void save(Bug bug){
 			bugRepository.save(bug);
+		}
+		public Bug findByWfentry(Wfentry wfentry){
+			  return bugRepository.findByWfentry(wfentry);
 		}
 }
