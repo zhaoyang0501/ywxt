@@ -163,18 +163,18 @@ line-height: 34px;
 .chzn-container-single .chzn-single{ height: 32px !important; line-height: 31px !important;  }
 
 .navbar-inverse .navbar-inner {
-  background: url("../images/bg111.jpg")no-repeat;
+  background: url("../images/bg.jpg")no-repeat;
   height: 100px;
 }
 
-/**透明度问题 **/
+/**閫忔槑搴﹂棶棰� **/
 .transparent_class {
 	filter:alpha(opacity=1);
 	-moz-opacity:0.5;
 	-khtml-opacity: 0.5;
 	opacity: 0.5;
 }
-/**首页可拖拽组件*/
+/**棣栭〉鍙嫋鎷界粍浠�*/
 .portlet{
 	background: #fff ;
 	min-height: 300px !important;

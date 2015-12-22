@@ -76,8 +76,8 @@
 													 <h3>维护记录单</h3> 
 												</div>
 												 <div class="row-fluid ">
-									         	 <div class="span4">	<span class='lable'>日期：</span> <input class='noborder_input'   value="<fmt:formatDate value="${runlog.createDate }" type="time" dateStyle="full" pattern="yyyy-MM-dd"/>" type="text"> </div>
-									          	<div class="span4"><span class='lable'>提交人：</span> <input value='${runlog.creater.realname}' class='noborder_input' type="text"> </div>
+									         	 <div class="span4">	<span class='lable'>日期：</span> <input class='noborder_input'   value="<fmt:formatDate value="${fixlog.createDate }" type="time" dateStyle="full" pattern="yyyy-MM-dd"/>" type="text"> </div>
+									          	<div class="span4"><span class='lable'>提交人：</span> <input value='${fixlog.creater.realname}' class='noborder_input' type="text"> </div>
 									       	 </div>
 											</td>
 										</tr>

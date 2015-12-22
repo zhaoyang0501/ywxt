@@ -62,7 +62,7 @@
 											<th >备注</th>
 											<th >姓名</th>
 											<th >电话</th>
-											<th >职称</th>
+											<th >部门</th>
 											<!--
 											<th >用户管理权限</th>
 											<th >分类管理权限</th>
@@ -132,13 +132,13 @@
 								</div>
 							</div>
 							<div class="control-group" id='control_project'>
-								<label for="job" class="control-label">职称：</label>
+								<label for="job" class="control-label">部门：</label>
 								<div class="controls">
 									<select id='job'>
-										<option value="管理员">管理员</option>
-										<option value="客服">客服</option>
-										<option value="维修工">维修工</option>
-										<option value="仓管员">仓管员</option>
+										<option value="运行管理部门">运行管理部门</option>
+										<option value="设备管理部门">设备管理部门</option>
+										<option value="生产部门">生产部门</option>
+										<option value="仓管管理部门">仓管管理部门</option>
 									</select>
 								</div>
 							</div>
