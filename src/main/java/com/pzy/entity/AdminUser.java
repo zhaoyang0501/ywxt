@@ -2,9 +2,11 @@ package com.pzy.entity;
 import java.util.Date;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.springframework.data.annotation.Persistent;
@@ -40,6 +42,15 @@ public class AdminUser {
 	private String role6;
 	@Persistent
 	private Integer  num;
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+	private AdminUser puser;
+	public AdminUser getPuser() {
+		return puser;
+	}
+	public void setPuser(AdminUser puser) {
+		this.puser = puser;
+	}
 	public String getDept() {
 		return dept;
 	}
