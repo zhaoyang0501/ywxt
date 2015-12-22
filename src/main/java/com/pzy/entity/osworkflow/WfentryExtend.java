@@ -1,4 +1,6 @@
 package com.pzy.entity.osworkflow;
+import java.util.Date;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -24,16 +26,24 @@ public class WfentryExtend {
 	/**文件名称*/
 	private String title;
 	
+	
 	/**紧急程度*/
 	private Integer degree;
 	
 	/**序号*/
 	private String sn;
 	
-	@ManyToOne(optional = true, cascade = CascadeType.ALL)  
-    @JoinColumn(name = "entry_id",referencedColumnName="id")  
+	@ManyToOne(fetch = FetchType.EAGER) 
 	private Wfentry wfentry;
 	
+	private  Date createDate;
+	
+	public Date getCreateDate() {
+		return createDate;
+	}
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
+	}
 	public Wfentry getWfentry() {
 		return wfentry;
 	}

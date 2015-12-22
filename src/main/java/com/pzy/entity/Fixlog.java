@@ -9,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import com.pzy.entity.osworkflow.Wfentry;
 /***
  *维修日志
  *
@@ -30,6 +32,15 @@ public class Fixlog  {
 	private String logstate;
 	
 	private Date createDate;
+	@ManyToOne(fetch = FetchType.EAGER)
+	private Wfentry wfentry;
+	public Wfentry getWfentry() {
+		return wfentry;
+	}
+
+	public void setWfentry(Wfentry wfentry) {
+		this.wfentry = wfentry;
+	}
 
 	public Long getId() {
 		return id;

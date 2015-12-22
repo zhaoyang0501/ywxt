@@ -17,6 +17,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.pzy.entity.Fixlog;
+import com.pzy.entity.Runlog;
+import com.pzy.entity.osworkflow.Wfentry;
 import com.pzy.repository.FixlogRepository;
 @Service
 public class FixlogService {
@@ -59,5 +61,8 @@ public class FixlogService {
 		}
 		public void save(Fixlog runlog){
 			runlogRepository.save(runlog);
+		}
+		public Fixlog findByWfentry(Wfentry wfentry){
+			  return runlogRepository.findByWfentry(wfentry);
 		}
 }

@@ -29,7 +29,7 @@ jQuery.approve= {
 						"sServerMethod" : "POST",
 						"bProcessing" : true,
 						"bSort" : false,
-						"sAjaxSource" : $.ace.getContextPath() + "//admin/toapprove/list",
+						"sAjaxSource" : $.ace.getContextPath() + "/admin/toapprove/list",
 						"fnServerData" : function(sSource, aoData, fnCallback) {
 							var workFlowName = $("#toapprove_workFlowName").val();
 							var startDate = $("#toapprove_startDate").val();
@@ -79,10 +79,10 @@ jQuery.approve= {
 						"aoColumns" : [ {
 							"mDataProp" : "wfentry.name"
 						},{
-							"mDataProp" : "wfentry.wfentryExtend.sn"
+							"mDataProp" : "wfentry.wfentryExtend.createDate"
 						},{
 							
-							"mDataProp" : "wfentry.wfentryExtend.creater.chinesename"
+							"mDataProp" : "wfentry.wfentryExtend.creater.realname"
 						},{
 							"mDataProp" : "startDate"
 						}, {
@@ -93,7 +93,7 @@ jQuery.approve= {
 									'aTargets' : [ 0],
 									'fnRender' : function(oObj, sVal) {
 										return  "<a style='font-weight: bold;'  href=\""+$.ace.getContextPath() +
-										"/workflow/toapprove/goApprove/"+ oObj.aData.wfentry.id+"\" >"+sVal+"</a>&nbsp;";
+										"/admin/toapprove/goApprove?id="+ oObj.aData.wfentry.id+"\" >"+sVal+"</a>&nbsp;";
 									}
 								},
 								{
@@ -110,7 +110,7 @@ jQuery.approve= {
 
 					});
 		} else {
-			var ajaxSource = $.ace.getContextPath() + "/workflow/toApproveList";
+			var ajaxSource = $.ace.getContextPath() + "/admin/toapprove/list";
 			var oSettings = this.toApprove.fnSettings();
 			oSettings.sAjaxSource = ajaxSource;
 			this.toApprove.fnDraw(oSettings);

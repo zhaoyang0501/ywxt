@@ -10,6 +10,8 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.pzy.entity.osworkflow.Wfentry;
+
 @Entity
 @Table(name = "t_fixlog")
 public class Bug {
@@ -27,6 +29,8 @@ public class Bug {
 	private String type;
 	@ManyToOne(fetch = FetchType.EAGER)
 	private  Category category;
+	@ManyToOne(fetch = FetchType.EAGER)
+	private Wfentry wfentry;
 	public Long getId() {
 		return id;
 	}

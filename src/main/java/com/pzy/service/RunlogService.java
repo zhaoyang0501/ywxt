@@ -15,7 +15,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
 import com.pzy.entity.Runlog;
+import com.pzy.entity.osworkflow.Wfentry;
 import com.pzy.repository.RunlogRepository;
 @Service
 public class RunlogService {
@@ -58,5 +60,8 @@ public class RunlogService {
 		}
 		public void save(Runlog runlog){
 			runlogRepository.save(runlog);
+		}
+		public Runlog findByWfentry(Wfentry wfentry){
+			  return runlogRepository.findByWfentry(wfentry);
 		}
 }

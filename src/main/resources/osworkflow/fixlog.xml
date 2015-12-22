@@ -10,7 +10,7 @@
 	</initial-actions>
 
 	<steps>
-		<step id="1" name="发送运行单">
+		<step id="1" name="发送维护单">
 			<actions>
 				<action id="11" name="发送">
 					<restrict-to>

@@ -1,6 +1,6 @@
 package com.pzy.action.admin;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,13 +13,20 @@ import org.apache.struts2.json.annotations.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 
+import com.opensymphony.workflow.spi.Step;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
+import com.osworkflow.SpringWorkflow;
 import com.pzy.entity.AdminUser;
 import com.pzy.entity.Category;
 import com.pzy.entity.Fixlog;
+import com.pzy.entity.Runlog;
+import com.pzy.entity.osworkflow.Wfentry;
+import com.pzy.entity.osworkflow.WfentryExtend;
 import com.pzy.service.CategoryService;
 import com.pzy.service.FixlogService;
+import com.pzy.service.RunlogService;
+import com.pzy.service.WorkFlowService;
 
 /***
  * 
@@ -51,6 +58,15 @@ public class FixlogAction extends ActionSupport {
 	private CategoryService categoryService;
 	
 	private List<Category> categorys;
+	
+	
+	private Integer actionid;
+	private String approves;
+	private Runlog runlog;
+	@Autowired
+	private SpringWorkflow springWorkflow;
+	@Autowired
+	private WorkFlowService workFlowService;
 	
 	@Action(value = "create", results = { @Result(name = "success", location = "/WEB-INF/views/admin/fixlog/create.jsp") })
 	public String create() {
@@ -121,7 +137,45 @@ public class FixlogAction extends ActionSupport {
 		fixlog.setCreater(user);
 		fixlog.setLogstate("新建");
 		fixlogService.save(fixlog);
-		tip = "系统运行日志录入成功！";
+		/**流程发起*/
+		Map<String, Object> argMap = new HashMap<String, Object>();
+		argMap.put("creater", String.valueOf(user.getId()));
+		argMap.put("caller",String.valueOf(user.getId()));
+		argMap.put("manager","1");
+		
+		springWorkflow.SetContext(String.valueOf(user.getId()));
+		Long workFlowid = springWorkflow.initialize("fixlog", 10, argMap);
+		List<Step> steps = springWorkflow.getCurrentSteps(workFlowid);
+		springWorkflow.doAction(workFlowid, 11, argMap);
+		/** 工作流扩展信息 **/
+		Wfentry wfentry = workFlowService.findWfentry(workFlowid);
+		fixlog.setWfentry(wfentry);
+		fixlogService.save(fixlog);
+		WfentryExtend extend = new WfentryExtend();
+		extend.setCreater(user);
+		extend.setCreateDate(new Date());
+		extend.setTitle(user.getRealname() + "的 [维护记录单]");
+		extend.setWfentry(wfentry);
+		workFlowService.saveWfentryExtend(extend);
+			/** 审批意见 **/
+		workFlowService.saveApproval("提交维护单", steps.get(0).getId(),springWorkflow.getWorkflowDescriptor("fixlog").getAction(11).getName());
+		tip = "系统维护单录入成功！";
+		return SUCCESS;
+	}
+	@Action(value = "doApprove", results = { @Result(name = "success",type="redirectAction", location = "../../admin/toapprove/goApprove?id=${id}") })
+	public String doApprove() throws Exception {
+		AdminUser user=(AdminUser)ActionContext.getContext().getSession().get("adminuser");
+		Map<String, Object> argMap = new HashMap<String, Object>();
+		argMap.put("creater", String.valueOf(user.getId()));
+		argMap.put("caller",String.valueOf(user.getId()));
+		argMap.put("manager","1");
+		
+		springWorkflow.SetContext(String.valueOf(user.getId()));
+		List<Step> steps = springWorkflow.getCurrentSteps(id);
+		springWorkflow.doAction(id, actionid, argMap);
+			/** 审批意见 **/
+		workFlowService.saveApproval(approves, steps.get(0).getId(),springWorkflow.getWorkflowDescriptor("fixlog").getAction(actionid).getName());
+		tip = "审批成功！";
 		return SUCCESS;
 	}
 
@@ -203,5 +257,23 @@ public class FixlogAction extends ActionSupport {
 	}
 	public void setCategorys(List<Category> categorys) {
 		this.categorys = categorys;
+	}
+	public Integer getActionid() {
+		return actionid;
+	}
+	public void setActionid(Integer actionid) {
+		this.actionid = actionid;
+	}
+	public String getApproves() {
+		return approves;
+	}
+	public void setApproves(String approves) {
+		this.approves = approves;
+	}
+	public Runlog getRunlog() {
+		return runlog;
+	}
+	public void setRunlog(Runlog runlog) {
+		this.runlog = runlog;
 	}
 }

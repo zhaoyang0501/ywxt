@@ -9,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import com.pzy.entity.osworkflow.Wfentry;
 /***
  *工单
  *
@@ -29,7 +31,8 @@ public class Runlog  {
 	private String logstate;
 	
 	private Date createDate;
-
+	@ManyToOne(fetch = FetchType.EAGER)
+	private Wfentry wfentry;
 	public Long getId() {
 		return id;
 	}
@@ -93,5 +96,11 @@ public class Runlog  {
 	public void setCreateDate(Date createDate) {
 		this.createDate = createDate;
 	}
-	
+	public Wfentry getWfentry() {
+		return wfentry;
+	}
+
+	public void setWfentry(Wfentry wfentry) {
+		this.wfentry = wfentry;
+	}
 }

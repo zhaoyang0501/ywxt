@@ -3,6 +3,7 @@ package com.pzy.action.admin;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,9 +22,13 @@ import com.opensymphony.xwork2.ActionSupport;
 import com.osworkflow.SpringWorkflow;
 import com.pzy.constants.ImsConstants.WorkFlowConstants;
 import com.pzy.entity.AdminUser;
+import com.pzy.entity.Fixlog;
 import com.pzy.entity.Runlog;
+import com.pzy.entity.osworkflow.Approval;
 import com.pzy.entity.osworkflow.CurrentStep;
+import com.pzy.entity.osworkflow.Wfentry;
 import com.pzy.service.AdminUserService;
+import com.pzy.service.FixlogService;
 import com.pzy.service.RunlogService;
 import com.pzy.service.WorkFlowService;
 
@@ -48,16 +53,22 @@ public class ToapproveAction extends ActionSupport {
 	private Long  craterId;
 	
 	private Map<String, Object> resultMap = new HashMap<String, Object>();
-
+	private Map<Integer,String>  actions = new LinkedHashMap<Integer, String>();;
 	private String name;
 	private Long id;
 	private Runlog runlog;
+	private Fixlog fixlog;
 	private Map<String,String>  workflowNames;
 	private String tip;
 	
+	private Wfentry wfentry;
 	private List<Runlog> runlogs;
+	
+	private List<Approval> approvals;
 	@Autowired
 	private RunlogService runlogService;
+	@Autowired
+	private FixlogService fixlogService;
 	@Autowired
 	private SpringWorkflow springWorkflow;
 	@Autowired
@@ -70,7 +81,24 @@ public class ToapproveAction extends ActionSupport {
 		runlogs = runlogService.findRunlogs();
 		return SUCCESS;
 	}
-
+	
+	@Action(value = "goApprove", results = { @Result(name = "runlog", location = "/WEB-INF/views/admin/runlog/approve.jsp"),
+			 @Result(name = "fixlog", location = "/WEB-INF/views/admin/fixlog/approve.jsp")})
+	public String goApprove() {
+		AdminUser user=(AdminUser)ActionContext.getContext().getSession().get("adminuser");
+		springWorkflow.SetContext(String.valueOf( user.getId()));
+		approvals=workFlowService.findApproval(id);
+		wfentry =workFlowService.findWfentry(id);
+		/***查可执行动作*/
+		int[] actionIds = springWorkflow.getAvailableActions(wfentry.getId(), null);
+		for(int i=0;i<actionIds.length;i++){
+			actions.put(springWorkflow.getWorkflowDescriptor(wfentry.getName()).getAction(actionIds[i]).getId(), 
+					springWorkflow.getWorkflowDescriptor(wfentry.getName()).getAction(actionIds[i]).getName());
+		}
+		runlog=runlogService.findByWfentry(wfentry);
+		fixlog=fixlogService.findByWfentry(wfentry);
+		return wfentry.getName();
+	}
 	@Action(value = "list", results = { @Result(name = "success", type = "json") }, params = {
 			"contentType", "text/html" })
 	public String list() throws WorkflowException, ParseException {
@@ -88,8 +116,6 @@ public class ToapproveAction extends ActionSupport {
 		resultMap.put("sEcho", sEcho);
 		return SUCCESS;
 	}
-
-	
 	public String getTip() {
 		return tip;
 	}
@@ -202,5 +228,23 @@ public class ToapproveAction extends ActionSupport {
 
 	public void setWorkflowNames(Map<String, String> workflowNames) {
 		this.workflowNames = workflowNames;
+	}
+	public Wfentry getWfentry() {
+		return wfentry;
+	}
+	public void setWfentry(Wfentry wfentry) {
+		this.wfentry = wfentry;
+	}
+	public List<Approval> getApprovals() {
+		return approvals;
+	}
+	public void setApprovals(List<Approval> approvals) {
+		this.approvals = approvals;
+	}
+	public Map<Integer, String> getActions() {
+		return actions;
+	}
+	public void setActions(Map<Integer, String> actions) {
+		this.actions = actions;
 	}
 }

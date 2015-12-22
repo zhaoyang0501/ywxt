@@ -1,5 +1,6 @@
 package com.pzy.action.admin;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,15 +12,17 @@ import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.json.annotations.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
+import com.opensymphony.workflow.spi.Step;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 import com.osworkflow.SpringWorkflow;
 import com.pzy.entity.AdminUser;
 import com.pzy.entity.Runlog;
+import com.pzy.entity.osworkflow.Wfentry;
+import com.pzy.entity.osworkflow.WfentryExtend;
 import com.pzy.service.RunlogService;
+import com.pzy.service.WorkFlowService;
 
 /***
  * 
@@ -40,6 +43,8 @@ public class RunlogAction extends ActionSupport {
 
 	private String name;
 	private Long id;
+	private Integer actionid;
+	private String approves;
 	private Runlog runlog;
 	
 	private String tip;
@@ -49,7 +54,8 @@ public class RunlogAction extends ActionSupport {
 	private RunlogService runlogService;
 	@Autowired
 	private SpringWorkflow springWorkflow;
-	
+	@Autowired
+	private WorkFlowService workFlowService;
 	@Action(value = "create", results = { @Result(name = "success", location = "/WEB-INF/views/admin/runlog/create.jsp") })
 	public String create() {
 		return SUCCESS;
@@ -59,6 +65,8 @@ public class RunlogAction extends ActionSupport {
 		runlogs = runlogService.findRunlogs();
 		return SUCCESS;
 	}
+	
+	
 
 	@Action(value = "list", results = { @Result(name = "success", type = "json") }, params = {
 			"contentType", "text/html" })
@@ -112,7 +120,6 @@ public class RunlogAction extends ActionSupport {
 	}
 
 
-	@Transactional(propagation=Propagation.REQUIRED)
 	@Action(value = "save", results = { @Result(name = "success", location = "/WEB-INF/views/admin/runlog/create.jsp") })
 	public String save() throws Exception {
 		AdminUser user=(AdminUser)ActionContext.getContext().getSession().get("adminuser");
@@ -123,11 +130,42 @@ public class RunlogAction extends ActionSupport {
 		Map<String, Object> argMap = new HashMap<String, Object>();
 		argMap.put("creater", String.valueOf(user.getId()));
 		argMap.put("caller",String.valueOf(user.getId()));
+		argMap.put("manager","1");
 		
 		springWorkflow.SetContext(String.valueOf(user.getId()));
 		Long workFlowid = springWorkflow.initialize("runlog", 10, argMap);
-		System.out.println("fuck"+workFlowid);
+		List<Step> steps = springWorkflow.getCurrentSteps(workFlowid);
+		springWorkflow.doAction(workFlowid, 11, argMap);
+		/** 工作流扩展信息 **/
+		Wfentry wfentry = workFlowService.findWfentry(workFlowid);
+		runlog.setWfentry(wfentry);
+		runlogService.save(runlog);
+		WfentryExtend extend = new WfentryExtend();
+		extend.setCreater(user);
+		extend.setCreateDate(new Date());
+		extend.setTitle(user.getRealname() + "的 [运行日志单]");
+		extend.setWfentry(wfentry);
+		workFlowService.saveWfentryExtend(extend);
+			/** 审批意见 **/
+		workFlowService.saveApproval("提交运行单", steps.get(0).getId(),springWorkflow.getWorkflowDescriptor("runlog").getAction(11).getName());
 		tip = "系统运行日志录入成功！";
+		return SUCCESS;
+	}
+
+	@Action(value = "doApprove", results = { @Result(name = "success",type="redirectAction", location = "../../admin/toapprove/goApprove?id=${id}") })
+	public String doApprove() throws Exception {
+		AdminUser user=(AdminUser)ActionContext.getContext().getSession().get("adminuser");
+		Map<String, Object> argMap = new HashMap<String, Object>();
+		argMap.put("creater", String.valueOf(user.getId()));
+		argMap.put("caller",String.valueOf(user.getId()));
+		argMap.put("manager","1");
+		
+		springWorkflow.SetContext(String.valueOf(user.getId()));
+		List<Step> steps = springWorkflow.getCurrentSteps(id);
+		springWorkflow.doAction(id, actionid, argMap);
+			/** 审批意见 **/
+		workFlowService.saveApproval(approves, steps.get(0).getId(),springWorkflow.getWorkflowDescriptor("runlog").getAction(actionid).getName());
+		tip = "审批成功！";
 		return SUCCESS;
 	}
 
@@ -203,5 +241,17 @@ public class RunlogAction extends ActionSupport {
 
 	public void setRunlogs(List<Runlog> runlogs) {
 		this.runlogs = runlogs;
+	}
+	public Integer getActionid() {
+		return actionid;
+	}
+	public void setActionid(Integer actionid) {
+		this.actionid = actionid;
+	}
+	public String getApproves() {
+		return approves;
+	}
+	public void setApproves(String approves) {
+		this.approves = approves;
 	}
 }
