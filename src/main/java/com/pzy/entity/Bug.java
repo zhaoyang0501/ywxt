@@ -37,6 +37,22 @@ public class Bug {
 	private  Category category;
 	@ManyToOne(fetch = FetchType.EAGER)
 	private Wfentry wfentry;
+	private String result;
+	
+	private String checkresult;
+	public String getResult() {
+		return result;
+	}
+	public void setResult(String result) {
+		this.result = result;
+	}
+	
+	public String getCheckresult() {
+		return checkresult;
+	}
+	public void setCheckresult(String checkresult) {
+		this.checkresult = checkresult;
+	}
 	public Long getId() {
 		return id;
 	}

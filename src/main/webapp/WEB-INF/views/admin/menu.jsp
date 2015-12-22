@@ -27,6 +27,7 @@
 			<div class="tab-pane active dailyreport" id="dailyreport">
 				<ul id="nav" class="accordion-nav" >
 				
+					<li><a href="${pageContext.request.contextPath}/admin/adminuser/centerdetail"><i class="icon-upload"></i>个人中心 </a></li>
 					<li><a href="${pageContext.request.contextPath}/admin/category/index"><i class="icon-upload"></i> 系统资产管理 </a></li>
 					<li><a href="${pageContext.request.contextPath}/admin/wiki/index"><i class="icon-upload"></i>知识库管理</a></li>
 					<li><a href="${pageContext.request.contextPath}/admin/adminuser/index"><i class="icon-upload"></i>用户管理</a></li>

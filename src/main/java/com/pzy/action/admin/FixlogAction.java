@@ -136,6 +136,7 @@ public class FixlogAction extends ActionSupport {
 		AdminUser user=(AdminUser)ActionContext.getContext().getSession().get("adminuser");
 		fixlog.setCreater(user);
 		fixlog.setLogstate("新建");
+		fixlog.setCreateDate(new Date());
 		fixlogService.save(fixlog);
 		/**流程发起*/
 		Map<String, Object> argMap = new HashMap<String, Object>();
@@ -162,7 +163,7 @@ public class FixlogAction extends ActionSupport {
 		tip = "系统维护单录入成功！";
 		return SUCCESS;
 	}
-	@Action(value = "doApprove", results = { @Result(name = "success",type="redirectAction", location = "../../admin/toapprove/goApprove?id=${id}") })
+	@Action(value = "doApprove", results = { @Result(name = "success",type="redirectAction", location = "../../admin/toapprove/goApprove?id=${id}&tip=1") })
 	public String doApprove() throws Exception {
 		AdminUser user=(AdminUser)ActionContext.getContext().getSession().get("adminuser");
 		Map<String, Object> argMap = new HashMap<String, Object>();

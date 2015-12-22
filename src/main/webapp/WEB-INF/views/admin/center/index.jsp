@@ -85,9 +85,7 @@
 							<div class="control-group" id='control_project'>
 								<label for="remark" class="control-label">备注：</label>
 								<div class="controls">
-									<textarea id="remark" name="adminuser.remark" placeholder="" rows="3">
-										${sessionScope.adminuser.remark}
-									</textarea>
+									<textarea id="remark" name="adminuser.remark" placeholder="" rows="3">${sessionScope.adminuser.remark}</textarea>
 								</div>
 							</div>
 							<div class="control-group" id='control_project'>

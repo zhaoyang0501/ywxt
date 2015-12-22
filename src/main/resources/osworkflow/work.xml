@@ -38,7 +38,7 @@
 						</conditions>
 					</restrict-to>
 					<results>
-							<unconditional-result id="223" old-status="Finished" status="Queued" step="3" owner="${nexter}" />
+							<unconditional-result id="223" old-status="Finished" status="Queued" step="3" owner="${manager}" />
 					</results>
 				</action>
 				<action id="22" name="打回">

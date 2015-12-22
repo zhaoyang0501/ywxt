@@ -24,7 +24,7 @@
 			forceParse: 0
 	    });
 		if("${tip}" != null && "${tip}" != ""){
-			noty({"text":"${tip}","layout":"top","type":"success","timeout":"2000"});
+			noty({"text":"处理成功，单据已提交","layout":"top","type":"success","timeout":"2000"});
 		}
 	});
 </script>
@@ -61,16 +61,27 @@
 							<h3>缺陷单提交</h3>
 						</div>
 						<div class="widget-container">
+						<c:if test="${name!=null }">
+						<div class="alert alert-success">
+								<button type="button" class="close" data-dismiss="alert">×</button>
+								<i class="icon-ok-sign"></i><strong>提示!当前状态： ${name}</strong>
+							</div>
+						</c:if>
+							
 							<form id='dayoffform' class="form-horizontal " method="post" action="runlog/save">
 							 <input type="hidden" name="token" id='token' value="${token}">
 								<table id='' class=" responsive table table-striped table_bordered_black table-condensed formtable" >
 									<tr>
-										<td colspan="4">
-											<div class="table_title">
-												 <h3>工作单</h3> 
-											</div>
-										</td>
-									</tr>
+											<td colspan="4">
+												<div  class="table_title">
+													 <h3>工作单</h3> 
+												</div>
+												 <div class="row-fluid ">
+									         	 <div class="span4">	<span class='lable'>日期：</span> <input class='noborder_input'   value="<fmt:formatDate value="${work.createDate }" type="time" dateStyle="full" pattern="yyyy-MM-dd"/>" type="text"> </div>
+									          	<div class="span4"><span class='lable'>提交人：</span> <input value='${work.creater.realname}' class='noborder_input' type="text"> </div>
+									       	 </div>
+											</td>
+										</tr>
 									<tr>
 										<td class='lable'>日期</td>
 										<td>${work.createDate }
@@ -100,11 +111,21 @@
 										<td class='lable'>工单内容：</td>
 										<td colspan="3" >${work.remark} </td>
 									</tr>
+									<tr>
+										<td class='lable'>工单处理结果：</td>
+										<td colspan="3" >${work.result } </td>
+									</tr>
+									
+									<tr>
+										<td class='lable'>工单验收结果：</td>
+										<td colspan="3" >${work.checkresult } </td>
+									</tr>
+									
 									<tr  class='remark'>
 										<td colspan="4">
 											<ol>
-											  <li>请及时提交维修单据</li>
-											  <li>不得替他人提交单据</li>
+											  <li>请及时提交单据</li>
+											  <li>不得替他人单据</li>
 											</ol>
 										</td>
 									</tr>

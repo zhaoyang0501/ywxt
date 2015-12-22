@@ -39,6 +39,25 @@ public class Work {
 	private Wfentry wfentry;
 	
 	private String dept;
+	
+	private String result;
+	
+	private String checkresult;
+	public String getResult() {
+		return result;
+	}
+	public void setResult(String result) {
+		this.result = result;
+	}
+	
+	public String getCheckresult() {
+		return checkresult;
+	}
+	public void setCheckresult(String checkresult) {
+		this.checkresult = checkresult;
+	}
+	
+	
 	public String getDept() {
 		return dept;
 	}

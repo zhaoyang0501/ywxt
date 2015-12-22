@@ -157,7 +157,7 @@ public class BugAction extends ActionSupport {
 		tip = "缺陷单录入成功！";
 		return SUCCESS;
 	}
-	@Action(value = "doApprove", results = { @Result(name = "success",type="redirectAction", location = "../../admin/toapprove/goApprove?id=${id}") })
+	@Action(value = "doApprove", results = { @Result(name = "success",type="redirectAction", location = "../../admin/toapprove/goApprove?id=${id}&tip=1") })
 	public String doApprove() throws Exception {
 		AdminUser user=(AdminUser)ActionContext.getContext().getSession().get("adminuser");
 		Map<String, Object> argMap = new HashMap<String, Object>();
@@ -168,6 +168,16 @@ public class BugAction extends ActionSupport {
 		
 		springWorkflow.SetContext(String.valueOf(user.getId()));
 		List<Step> steps = springWorkflow.getCurrentSteps(id);
+		if(steps.get(0).getStepId()==4){
+			Bug bug=bugService.findByWfentry(workFlowService.findWfentry(id));
+			bug.setResult(approves);
+			bugService.save(bug);
+		}
+		if(steps.get(0).getStepId()==5){
+			Bug bug=bugService.findByWfentry(workFlowService.findWfentry(id));
+			bug.setCheckresult(approves);
+			bugService.save(bug);
+		}
 		springWorkflow.doAction(id, actionid, argMap);
 			/** 审批意见 **/
 		workFlowService.saveApproval(approves, steps.get(0).getId(),springWorkflow.getWorkflowDescriptor("bug").getAction(actionid).getName());

@@ -114,6 +114,8 @@ public class ToapproveAction extends ActionSupport {
 		bug=bugService.findByWfentry(wfentry);
 		work=workService.findByWfentry(wfentry);
 		users=adminUserService.findAll();
+		if(wfentry.getCurrentStep()!=null)
+		name=springWorkflow.getWorkflowDescriptor(wfentry.getName()).getStep(wfentry.getCurrentStep().getStepId().intValue()).getName();
 		return wfentry.getName();
 	}
 	@Action(value = "list", results = { @Result(name = "success", type = "json") }, params = {

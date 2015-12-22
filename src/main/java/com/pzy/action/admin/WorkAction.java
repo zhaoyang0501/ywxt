@@ -18,6 +18,7 @@ import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 import com.osworkflow.SpringWorkflow;
 import com.pzy.entity.AdminUser;
+import com.pzy.entity.Bug;
 import com.pzy.entity.Category;
 import com.pzy.entity.Work;
 import com.pzy.entity.osworkflow.Wfentry;
@@ -157,7 +158,7 @@ public class WorkAction extends ActionSupport {
 		tip = "工单录入成功！";
 		return SUCCESS;
 	}
-	@Action(value = "doApprove", results = { @Result(name = "success",type="redirectAction", location = "../../admin/toapprove/goApprove?id=${id}") })
+	@Action(value = "doApprove", results = { @Result(name = "success",type="redirectAction", location = "../../admin/toapprove/goApprove?id=${id}&tip=1") })
 	public String doApprove() throws Exception {
 		AdminUser user=(AdminUser)ActionContext.getContext().getSession().get("adminuser");
 		Map<String, Object> argMap = new HashMap<String, Object>();
@@ -168,6 +169,16 @@ public class WorkAction extends ActionSupport {
 		
 		springWorkflow.SetContext(String.valueOf(user.getId()));
 		List<Step> steps = springWorkflow.getCurrentSteps(id);
+		if(steps.get(0).getStepId()==4){
+			Work bug=workService.findByWfentry(workFlowService.findWfentry(id));
+			bug.setResult(approves);
+			workService.save(bug);
+		}
+		if(steps.get(0).getStepId()==5){
+			Work bug=workService.findByWfentry(workFlowService.findWfentry(id));
+			bug.setCheckresult(approves);
+			workService.save(bug);
+		}
 		springWorkflow.doAction(id, actionid, argMap);
 			/** 审批意见 **/
 		workFlowService.saveApproval(approves, steps.get(0).getId(),springWorkflow.getWorkflowDescriptor("work").getAction(actionid).getName());

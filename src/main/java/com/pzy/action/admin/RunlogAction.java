@@ -152,7 +152,7 @@ public class RunlogAction extends ActionSupport {
 		return SUCCESS;
 	}
 
-	@Action(value = "doApprove", results = { @Result(name = "success",type="redirectAction", location = "../../admin/toapprove/goApprove?id=${id}") })
+	@Action(value = "doApprove", results = { @Result(name = "success",type="redirectAction", location = "../../admin/toapprove/goApprove?id=${id}&tip=1") })
 	public String doApprove() throws Exception {
 		AdminUser user=(AdminUser)ActionContext.getContext().getSession().get("adminuser");
 		Map<String, Object> argMap = new HashMap<String, Object>();
