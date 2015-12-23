@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -20,10 +21,12 @@ import com.osworkflow.SpringWorkflow;
 import com.pzy.entity.AdminUser;
 import com.pzy.entity.Category;
 import com.pzy.entity.Bug;
+import com.pzy.entity.Log;
 import com.pzy.entity.osworkflow.Wfentry;
 import com.pzy.entity.osworkflow.WfentryExtend;
 import com.pzy.service.CategoryService;
 import com.pzy.service.BugService;
+import com.pzy.service.LogService;
 import com.pzy.service.WorkFlowService;
 
 /***
@@ -62,6 +65,9 @@ public class BugAction extends ActionSupport {
 	private SpringWorkflow springWorkflow;
 	@Autowired
 	private WorkFlowService workFlowService;
+
+	@Autowired
+	LogService logService;
 	@Action(value = "create", results = { @Result(name = "success", location = "/WEB-INF/views/admin/bug/create.jsp") })
 	public String create() {
 		categorys=categoryService.findAll();
@@ -155,6 +161,7 @@ public class BugAction extends ActionSupport {
 			/** 审批意见 **/
 		workFlowService.saveApproval("提交缺陷单", steps.get(0).getId(),springWorkflow.getWorkflowDescriptor("bug").getAction(11).getName());
 		tip = "缺陷单录入成功！";
+		logService.save(user,getIp(),user.getRealname()+"提交了缺陷维修单单据编号为！"+workFlowid,Log.INFO_LEVEL);	
 		return SUCCESS;
 	}
 	@Action(value = "doApprove", results = { @Result(name = "success",type="redirectAction", location = "../../admin/toapprove/goApprove?id=${id}&tip=1") })
@@ -182,6 +189,7 @@ public class BugAction extends ActionSupport {
 			/** 审批意见 **/
 		workFlowService.saveApproval(approves, steps.get(0).getId(),springWorkflow.getWorkflowDescriptor("bug").getAction(actionid).getName());
 		tip = "审批成功！";
+		logService.save(user,getIp(),user.getRealname()+"审批了缺陷维修单为！"+id,Log.INFO_LEVEL);	
 		return SUCCESS;
 	}
 	public String getTip() {
@@ -280,5 +288,8 @@ public class BugAction extends ActionSupport {
 	}
 	public void setNexter(String nexter) {
 		this.nexter = nexter;
+	}
+	private String getIp(){
+	    	return ServletActionContext.getRequest().getRemoteAddr();
 	}
 }

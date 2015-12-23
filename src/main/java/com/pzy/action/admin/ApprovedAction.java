@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.time.DateUtils;
+import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -24,6 +25,7 @@ import com.pzy.constants.ImsConstants.WorkFlowConstants;
 import com.pzy.entity.AdminUser;
 import com.pzy.entity.Bug;
 import com.pzy.entity.Fixlog;
+import com.pzy.entity.Log;
 import com.pzy.entity.Runlog;
 import com.pzy.entity.osworkflow.Approval;
 import com.pzy.entity.osworkflow.CurrentStep;
@@ -32,6 +34,7 @@ import com.pzy.entity.osworkflow.Wfentry;
 import com.pzy.service.AdminUserService;
 import com.pzy.service.BugService;
 import com.pzy.service.FixlogService;
+import com.pzy.service.LogService;
 import com.pzy.service.RunlogService;
 import com.pzy.service.WorkFlowService;
 
@@ -83,6 +86,9 @@ public class ApprovedAction extends ActionSupport {
 	private AdminUserService adminUserService;
 	@Autowired
 	private WorkFlowService workFlowService;
+	
+	@Autowired
+	LogService logService;
 	@Action(value = "index", results = { @Result(name = "success", location = "/WEB-INF/views/admin/approved/index.jsp") })
 	public String index() {
 		users=adminUserService.findAll();
@@ -125,6 +131,7 @@ public class ApprovedAction extends ActionSupport {
 		resultMap.put("iTotalRecords", currentSteps.getTotalElements());
 		resultMap.put("iTotalDisplayRecords", currentSteps.getTotalElements());
 		resultMap.put("sEcho", sEcho);
+		logService.save(user,getIp(),user.getRealname()+"查询了我的已办事项"+id,Log.INFO_LEVEL);
 		return SUCCESS;
 	}
 	public String getTip() {
@@ -287,5 +294,8 @@ public class ApprovedAction extends ActionSupport {
 
 	public void setWorkflowState(Integer workflowState) {
 		this.workflowState = workflowState;
+	}
+	 private String getIp(){
+	    	return ServletActionContext.getRequest().getRemoteAddr();
 	}
 }

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -15,7 +16,9 @@ import org.springframework.data.domain.Page;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 import com.pzy.entity.AdminUser;
+import com.pzy.entity.Log;
 import com.pzy.service.AdminUserService;
+import com.pzy.service.LogService;
 /***
  * 
  * @author 263608237@qq.com
@@ -39,6 +42,8 @@ public class AdminUserAction extends ActionSupport {
 	private String newpasswordtwo;
 	@Autowired
 	private AdminUserService adminUserService;
+	@Autowired
+	LogService logService;
 	
 	@Action(value = "centerdetail", results = { @Result(name = "success", location = "/WEB-INF/views/admin/center/index.jsp") })
 	public String center() {
@@ -56,6 +61,7 @@ public class AdminUserAction extends ActionSupport {
 		ActionContext.getContext().getSession().put("adminuser",bean);
 		resultMap.put("state", "success");
 		this.name = "修改成功";
+		logService.save(bean,getIp(),bean.getRealname()+"修改了个人信息！",Log.WARM_LEVEL);	 
 		return SUCCESS;
 	}
 	@Action(value = "docenterpassword", results = { @Result(name = "success", location = "/WEB-INF/views/admin/center/index.jsp") })
@@ -74,6 +80,7 @@ public class AdminUserAction extends ActionSupport {
 		adminUserService.save(bean);
 		ActionContext.getContext().getSession().put("adminuser",bean);
 		resultMap.put("state", "success");
+		logService.save(bean,getIp(),bean.getRealname()+"修改了个人密码！",Log.WARM_LEVEL);	
 		this.name = "密码修改成功";
 		return SUCCESS;
 	}
@@ -95,6 +102,8 @@ public class AdminUserAction extends ActionSupport {
 		resultMap.put("iTotalRecords", list.getTotalElements());
 		resultMap.put("iTotalDisplayRecords", list.getTotalElements());
 		resultMap.put("sEcho", sEcho);
+		logService.save((AdminUser)ActionContext.getContext().getSession().get("adminuser"),getIp()
+				,((AdminUser)ActionContext.getContext().getSession().get("adminuser")).getRealname()+"查询了个人信息！",Log.WARM_LEVEL);	
 		return SUCCESS;
 	}
 	/***
@@ -107,6 +116,8 @@ public class AdminUserAction extends ActionSupport {
 		adminUserService.delete(id);
 		resultMap.put("state", "success");
 		resultMap.put("msg", "删除成功");
+		AdminUser user=(AdminUser)ActionContext.getContext().getSession().get("adminuser");
+		logService.save(user,getIp(),user.getRealname()+"删除了一条员工信息！id为"+id,Log.DANGER_LEVEL);	
 		return SUCCESS;
 	}
 	/***
@@ -251,5 +262,8 @@ public class AdminUserAction extends ActionSupport {
 
 	public void setNewpasswordtwo(String newpasswordtwo) {
 		this.newpasswordtwo = newpasswordtwo;
+	}
+	 private String getIp(){
+	    	return ServletActionContext.getRequest().getRemoteAddr();
 	}
 }

@@ -37,6 +37,7 @@
 					<li><a href="${pageContext.request.contextPath}/admin/fixlog/create"><i class="icon-upload"></i>日常维护记录提交</a></li>
 					<li><a href="${pageContext.request.contextPath}/admin/bug/create"><i class="icon-upload"></i>缺陷流程提交</a></li>					
 					<li><a href="${pageContext.request.contextPath}/admin/work/create"><i class="icon-upload"></i>工单流程提交</a></li>	
+					<li><a href="${pageContext.request.contextPath}/admin/log/index"><i class="icon-upload"></i>系统日志查询</a></li>	
 				<%-- <c:if test="${sessionScope.adminuser.job=='客服'}">
 					<li><a href="${pageContext.request.contextPath}/admin/adminuser/centerdetail"><i class="icon-upload"></i>个人中心 </a></li>
 					<li><a href="${pageContext.request.contextPath}/admin/category/index"><i class="icon-upload"></i> 零部件查询 </a></li>
