@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -13,9 +14,14 @@ import org.apache.struts2.json.annotations.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 
+import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
+import com.pzy.entity.AdminUser;
 import com.pzy.entity.Category;
+import com.pzy.entity.Log;
 import com.pzy.service.CategoryService;
+import com.pzy.service.LogService;
+import com.pzy.service.WorkFlowService;
 
 /***
  * 
@@ -41,8 +47,15 @@ public class CategoryAction extends ActionSupport {
 	@Autowired
 	private CategoryService categoryService;
 
+	@Autowired
+	LogService logService;
+	private String getIp(){
+    	return ServletActionContext.getRequest().getRemoteAddr();
+	}
 	@Action(value = "index", results = { @Result(name = "success", location = "/WEB-INF/views/admin/category/index.jsp") })
 	public String index() {
+		AdminUser user=(AdminUser)ActionContext.getContext().getSession().get("adminuser");
+		logService.save(user,getIp(),user.getRealname()+"查看了资产设备"+id,Log.INFO_LEVEL);	
 		categorys = categoryService.findCategorys();
 		return SUCCESS;
 	}

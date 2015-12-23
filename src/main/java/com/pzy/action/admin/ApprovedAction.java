@@ -131,7 +131,7 @@ public class ApprovedAction extends ActionSupport {
 		resultMap.put("iTotalRecords", currentSteps.getTotalElements());
 		resultMap.put("iTotalDisplayRecords", currentSteps.getTotalElements());
 		resultMap.put("sEcho", sEcho);
-		logService.save(user,getIp(),user.getRealname()+"查询了我的已办事项"+id,Log.INFO_LEVEL);
+		logService.save(user,getIp(),user.getRealname()+"查询了我的已办事项",Log.INFO_LEVEL);
 		return SUCCESS;
 	}
 	public String getTip() {

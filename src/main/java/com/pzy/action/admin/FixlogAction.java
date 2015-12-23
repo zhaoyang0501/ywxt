@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -20,11 +21,13 @@ import com.osworkflow.SpringWorkflow;
 import com.pzy.entity.AdminUser;
 import com.pzy.entity.Category;
 import com.pzy.entity.Fixlog;
+import com.pzy.entity.Log;
 import com.pzy.entity.Runlog;
 import com.pzy.entity.osworkflow.Wfentry;
 import com.pzy.entity.osworkflow.WfentryExtend;
 import com.pzy.service.CategoryService;
 import com.pzy.service.FixlogService;
+import com.pzy.service.LogService;
 import com.pzy.service.RunlogService;
 import com.pzy.service.WorkFlowService;
 
@@ -67,7 +70,11 @@ public class FixlogAction extends ActionSupport {
 	private SpringWorkflow springWorkflow;
 	@Autowired
 	private WorkFlowService workFlowService;
-	
+	@Autowired
+	LogService logService;
+	private String getIp(){
+    	return ServletActionContext.getRequest().getRemoteAddr();
+	}
 	@Action(value = "create", results = { @Result(name = "success", location = "/WEB-INF/views/admin/fixlog/create.jsp") })
 	public String create() {
 		categorys=categoryService.findAll();
@@ -161,6 +168,8 @@ public class FixlogAction extends ActionSupport {
 			/** 审批意见 **/
 		workFlowService.saveApproval("提交维护单", steps.get(0).getId(),springWorkflow.getWorkflowDescriptor("fixlog").getAction(11).getName());
 		tip = "系统维护单录入成功！";
+		logService.save(user,getIp(),user.getRealname()+"提交了系统维护单，单据编号为"+workFlowid,Log.INFO_LEVEL);	
+	
 		return SUCCESS;
 	}
 	@Action(value = "doApprove", results = { @Result(name = "success",type="redirectAction", location = "../../admin/toapprove/goApprove?id=${id}&tip=1") })
@@ -176,6 +185,8 @@ public class FixlogAction extends ActionSupport {
 		springWorkflow.doAction(id, actionid, argMap);
 			/** 审批意见 **/
 		workFlowService.saveApproval(approves, steps.get(0).getId(),springWorkflow.getWorkflowDescriptor("fixlog").getAction(actionid).getName());
+		logService.save(user,getIp(),user.getRealname()+"审批了系统维护单，单据编号为"+id,Log.INFO_LEVEL);	
+		
 		tip = "审批成功！";
 		return SUCCESS;
 	}
