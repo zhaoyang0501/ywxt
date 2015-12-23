@@ -38,8 +38,8 @@
 				<div class="row-fluid ">
 					<div class="span12">
 						<div class="content-widgets light-gray">
-							<div class="widget-head  bondi-blue" >
-								<h3>资源管理</h3>
+							<div class="widget-head  " >
+								<h3>日志查询</h3>
 							</div>
 							<div class="box well form-inline">
 								<div class="input-append date">
