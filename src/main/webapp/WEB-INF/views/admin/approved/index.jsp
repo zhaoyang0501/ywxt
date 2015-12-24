@@ -58,12 +58,6 @@
 										<input id="approved_endDate" style="width: 120px;" type="text" value="" readonly="readonly">
 										<span class="add-on"><i class="icon-th"></i></span>
 									</div>
-									<label class="control-lableName">提交人：</label>
-									<select id='creater' name="creater"  data-placeholder="选择提交人"  >
-													<c:forEach items="${users }" var="bean">
-														<option value="${bean.id }">${bean.realname }</option>
-													</c:forEach>
-									</select> 
 									<label class="control-lableName">状态</label>
 									<select  class='workState' id="approved_workFlowState" style="width: 150px;">
 									    <option value="">&nbsp;</option>

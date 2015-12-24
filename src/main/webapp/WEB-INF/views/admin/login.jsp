@@ -138,7 +138,7 @@ body {
 			</c:if>
 				<div class="input-group">
 					<span class="input-group-addon"><i class="icon-user"></i></span>
-					<input id="username" name="username" class="required form-control" tabindex="1" placeholder="用户名" accesskey="n" type="text" value="" autocomplete="false"/>
+					<input id="userName" name=userName class="required form-control" tabindex="1" placeholder="用户名" accesskey="n" type="text" value="" autocomplete="false"/>
 				</div>
 			
 			<div class="input-group" style="margin-bottom: 10px;margin-top: 10px;">
